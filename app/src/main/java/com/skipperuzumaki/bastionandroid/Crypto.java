@@ -46,14 +46,11 @@ public class Crypto {
 
     public
     byte[] Encrypt() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        byte[] array = new byte[16];
+        byte[] array = new byte[8];
         new Random().nextBytes(array);
-        for (int i = 11; i < 16; i++){
-            array[i] = 0;
+        for (int i = 5; i < 8; i++){
+            array[i] = 127;
         }
-        // TODO: CONVERSIONS
-        // values between -127 and 127 inclusive convert to 0 to 255
-        // if possible add two values to convert to 0 to 510
         Cipher cipher = null;
         cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, Key);
@@ -69,8 +66,8 @@ public class Crypto {
         cipher.init(Cipher.DECRYPT_MODE, TempKey);
         byte[] result = cipher.doFinal(message);
         boolean ret = true;
-        for (int i = 11; i < 16; i++){
-            if (result[i] != 0){
+        for (int i = 5; i < 8; i++){
+            if (result[i] != 127){
                 ret = false;
                 break;
             }
