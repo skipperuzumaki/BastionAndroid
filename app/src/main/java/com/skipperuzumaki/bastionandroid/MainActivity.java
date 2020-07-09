@@ -83,9 +83,12 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-                System.out.print(s);
-                System.out.print(' ');
-                System.out.println(s.length());
+                UuidHelper U = new UuidHelper();
+                System.out.println(s);
+                String j = U.Generate(s);
+                System.out.println(j);
+                String k = U.Recouperate(j);
+                System.out.println(k);
             }
         });
 
