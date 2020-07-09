@@ -3,21 +3,23 @@ package com.skipperuzumaki.bastionandroid;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -27,12 +29,45 @@ public class MainActivity extends AppCompatActivity {
 
     File FileDirectory;
     Crypto Cryptography;
+    Broadcast Broadcaster;
+    Encoder Encode;
+    UuidHelper UuidH;
+    Boolean Running;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 1);
+        }
+        final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    device.fetchUuidsWithSdp();
+                }
+                else if (BluetoothDevice.ACTION_UUID.equals(action)) {
+                    BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    Parcelable[] uuids =intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+                    for (Parcelable ep : uuids) {
+                        String uuid = ep.toString();
+                        System.out.println(uuid);
+                    }
+                }
+            }};
+        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter1);
+        IntentFilter filter2 = new IntentFilter(BluetoothDevice.ACTION_UUID);
+        registerReceiver(mReceiver, filter2);
         setContentView(R.layout.activity_main);
         FileDirectory = getFilesDir();
+        Broadcaster = new Broadcast();
+        Running = false;
+        UuidH = new UuidHelper();
+        Encode = new Encoder();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 Cryptography = new Crypto(FileDirectory);
@@ -42,58 +77,43 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        Button button = (Button) findViewById(R.id.Toggle);
+        final Button button = (Button) findViewById(R.id.Toggle);
         button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             public void onClick(View v) {
-                byte[] b = new byte[0];
-                Encoder E = new Encoder();
-                String s = new String();
-                try {
-                    b = Cryptography.Encrypt();
-                    s = E.Encode(b);
-                } catch (NoSuchPaddingException e) {
-                    e.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
-                    e.printStackTrace();
-                } catch (BadPaddingException e) {
-                    e.printStackTrace();
-                } catch (IllegalBlockSizeException e) {
-                    e.printStackTrace();
-                } catch (InvalidAlgorithmParameterException e) {
-                    e.printStackTrace();
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    byte[] keyBytes = Cryptography.Key.getEncoded();
+                if (!Running) {
+                    Running = true;
+                    button.setText("Stop Contact Tracing");
                     try {
-                        System.out.println(Cryptography.Verify(E.Decode(s),keyBytes));
+                        Broadcaster.Start(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
                     } catch (NoSuchPaddingException e) {
                         e.printStackTrace();
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     } catch (InvalidKeyException e) {
                         e.printStackTrace();
-                    } catch (IllegalBlockSizeException e) {
-                        e.printStackTrace();
                     } catch (BadPaddingException e) {
+                        e.printStackTrace();
+                    } catch (IllegalBlockSizeException e) {
                         e.printStackTrace();
                     } catch (InvalidAlgorithmParameterException e) {
                         e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                UuidHelper U = new UuidHelper();
-                System.out.println(s);
-                String j = U.Generate(s);
-                System.out.println(j);
-                String k = U.Recouperate(j);
-                System.out.println(k);
+                else{
+                    Running = false;
+                    button.setText("Start Contact Tracing");
+                    try {
+                        Broadcaster.Stop();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
-
     }
-
 }
 
 

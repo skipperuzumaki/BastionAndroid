@@ -10,12 +10,12 @@ public class UuidHelper {
                 Data.substring(8, 12) + "-4" +
                 Data.substring(12, 15) + "-8" +
                 Data.substring(15, 18) + "-" +
-                Data.substring(18) + "trac";
+                Data.substring(18) + "15ac";
         return uuid;
     }
 
     String Recouperate(String uuid){
-        String regex = "([a-f0-9]{8})-([a-f0-9]{4})-4([a-f0-9]{3})-8([a-f0-9]{3})-([a-f0-9]{8})trac";
+        String regex = "([a-f0-9]{8})-([a-f0-9]{4})-4([a-f0-9]{3})-8([a-f0-9]{3})-([a-f0-9]{8})15ac";
         Pattern pattern = Pattern.compile(regex);
         Matcher m = pattern.matcher(uuid.toLowerCase());
         if (m.find()) {

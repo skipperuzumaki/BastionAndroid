@@ -36,7 +36,7 @@ public class Crypto {
         }
         File Data = new File(Directory.getPath() + "\\Keys.txt");
         String algorithm = "ChaCha20";
-        if (!Data.exists()){
+        if (Data.exists()){
             byte[] Keygen = Files.readAllBytes(Data.toPath());
             Key = new SecretKeySpec(Keygen, algorithm);
         }
