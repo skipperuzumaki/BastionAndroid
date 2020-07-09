@@ -7,8 +7,6 @@ public class Encoder {
         for (int i = 0; i < value.length; i++) {
             int j = (int) value[i];
             String st = String.format("%02X", (j + 128));
-            System.out.print(st);
-            System.out.print(' ');
             ret += st;
         }
         System.out.println();

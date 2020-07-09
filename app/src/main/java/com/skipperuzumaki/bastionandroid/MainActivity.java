@@ -12,6 +12,7 @@ import android.widget.Button;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } catch (IllegalBlockSizeException e) {
                     e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     byte[] keyBytes = Cryptography.Key.getEncoded();
@@ -76,10 +79,10 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     } catch (BadPaddingException e) {
                         e.printStackTrace();
+                    } catch (InvalidAlgorithmParameterException e) {
+                        e.printStackTrace();
                     }
                 }
-                System.out.print(Arrays.toString(b));
-                System.out.print(' ');
                 System.out.print(s);
                 System.out.print(' ');
                 System.out.println(s.length());

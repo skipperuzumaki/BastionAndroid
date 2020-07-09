@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -20,17 +21,22 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
     public
     SecretKey Key;
+    byte[] nonce = new byte[12];
     @RequiresApi(api = Build.VERSION_CODES.O)
     public
     Crypto(File Directory) throws NoSuchAlgorithmException, IOException {
+        for (int i = 0; i < 12; i++){
+            nonce[i] = 127;
+        }
         File Data = new File(Directory.getPath() + "\\Keys.txt");
-        String algorithm = "AES";
-        if (Data.exists()){
+        String algorithm = "ChaCha20";
+        if (!Data.exists()){
             byte[] Keygen = Files.readAllBytes(Data.toPath());
             Key = new SecretKeySpec(Keygen, algorithm);
         }
@@ -45,28 +51,30 @@ public class Crypto {
     }
 
     public
-    byte[] Encrypt() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        byte[] array = new byte[8];
+    byte[] Encrypt() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
+        byte[] array = new byte[13];
         new Random().nextBytes(array);
-        for (int i = 5; i < 8; i++){
+        for (int i = 9; i < 13; i++){
             array[i] = 127;
         }
         Cipher cipher = null;
-        cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, Key);
+        cipher = Cipher.getInstance("ChaCha20");
+        IvParameterSpec iv = new IvParameterSpec(nonce);
+        cipher.init(Cipher.ENCRYPT_MODE, Key, iv);
         byte[] cipherText = cipher.doFinal(array);
         return cipherText;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    boolean Verify(byte[] message, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        SecretKey TempKey = new SecretKeySpec(key, "AES");
+    boolean Verify(byte[] message, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
+        SecretKey TempKey = new SecretKeySpec(key, "ChaCha20");
         Cipher cipher = null;
-        cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, TempKey);
+        cipher = Cipher.getInstance("ChaCha20");
+        IvParameterSpec iv = new IvParameterSpec(nonce);
+        cipher.init(Cipher.DECRYPT_MODE, TempKey, iv);
         byte[] result = cipher.doFinal(message);
         boolean ret = true;
-        for (int i = 5; i < 8; i++){
+        for (int i = 9; i < 13; i++){
             if (result[i] != 127){
                 ret = false;
                 break;
