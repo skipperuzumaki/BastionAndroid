@@ -48,6 +48,9 @@ public class Crypto {
     byte[] Encrypt() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         byte[] array = new byte[16];
         new Random().nextBytes(array);
+        for (int i = 11; i < 16; i++){
+            array[i] = 0;
+        }
         // TODO: CONVERSIONS
         // values between -127 and 127 inclusive convert to 0 to 255
         // if possible add two values to convert to 0 to 510
@@ -59,18 +62,20 @@ public class Crypto {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    boolean Verify(byte[] message, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,  IllegalBlockSizeException {
+    boolean Verify(byte[] message, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         SecretKey TempKey = new SecretKeySpec(key, "AES");
         Cipher cipher = null;
         cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, TempKey);
-        byte[] result = new byte[0];
-        try {
-            result = cipher.doFinal(message);
-        } catch (BadPaddingException e) {
-            return false;
+        byte[] result = cipher.doFinal(message);
+        boolean ret = true;
+        for (int i = 11; i < 16; i++){
+            if (result[i] != 0){
+                ret = false;
+                break;
+            }
         }
-        return true;
+        return ret;
     }
 
 }

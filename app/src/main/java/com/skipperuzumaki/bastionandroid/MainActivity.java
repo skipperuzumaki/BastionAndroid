@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.Toggle);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("HERE");
                 byte[] b = new byte[16];
                 try {
                     b = Cryptography.Encrypt();
@@ -66,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
                     } catch (InvalidKeyException e) {
                         e.printStackTrace();
                     } catch (IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    } catch (BadPaddingException e) {
                         e.printStackTrace();
                     }
                 }
