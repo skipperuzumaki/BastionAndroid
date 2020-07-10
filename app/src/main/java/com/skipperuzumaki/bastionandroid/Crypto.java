@@ -25,9 +25,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
-    public
-    SecretKey Key;
-    byte[] nonce = new byte[12];
+    private SecretKey Key;
+    private byte[] nonce = new byte[12];
     @RequiresApi(api = Build.VERSION_CODES.O)
     public
     Crypto(File Directory) throws NoSuchAlgorithmException, IOException {
@@ -57,12 +56,10 @@ public class Crypto {
         for (int i = 9; i < 13; i++){
             array[i] = 127;
         }
-        Cipher cipher = null;
-        cipher = Cipher.getInstance("ChaCha20");
+        Cipher cipher = Cipher.getInstance("ChaCha20");
         IvParameterSpec iv = new IvParameterSpec(nonce);
         cipher.init(Cipher.ENCRYPT_MODE, Key, iv);
-        byte[] cipherText = cipher.doFinal(array);
-        return cipherText;
+        return cipher.doFinal(array);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
