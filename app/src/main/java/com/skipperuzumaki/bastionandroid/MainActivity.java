@@ -45,8 +45,17 @@ public class MainActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 1);
         }
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED){
+        int permissionCheckBt = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN);
+        if (permissionCheckBt != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.BLUETOOTH_ADMIN)){
+                Toast.makeText(this, "Bluetooth Permission is Required", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                requestPermissions(new String[]{Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN}, 1);
+            }
+        }
+        int permissionCheckLoc = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheckLoc != PackageManager.PERMISSION_GRANTED){
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
                 Toast.makeText(this, "The permission to get BLE location data is required", Toast.LENGTH_SHORT).show();
             }
@@ -54,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
+
         setContentView(R.layout.activity_main);
         final Button button = (Button) findViewById(R.id.Toggle);
         button.setOnClickListener(new View.OnClickListener() {
