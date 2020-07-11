@@ -49,11 +49,10 @@ public class MainActivity extends AppCompatActivity {
         if (permissionCheck != PackageManager.PERMISSION_GRANTED){
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)){
                 Toast.makeText(this, "The permission to get BLE location data is required", Toast.LENGTH_SHORT).show();
-            }else{
+            }
+            else{
                 requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
-        }else{
-            Toast.makeText(this, "Location permissions already granted", Toast.LENGTH_SHORT).show();
         }
         setContentView(R.layout.activity_main);
         final Button button = (Button) findViewById(R.id.Toggle);

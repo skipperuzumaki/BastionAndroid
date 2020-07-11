@@ -10,12 +10,21 @@ import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 public class Trace {
     BluetoothLeScanner mBluetoothLeScanner;
-    Trace() {
+    File Data;
+    UuidHelper U;
+    Trace(File Directory) {
+        Data = new File(Directory.getPath() + "\\Trace.txt");
+        U = new UuidHelper();
         mBluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
     }
     ScanCallback mScanCallback = new ScanCallback() {
@@ -25,7 +34,26 @@ public class Trace {
             List<ParcelUuid> uuids = result.getScanRecord().getServiceUuids();
             if (uuids != null) {
                 for (ParcelUuid uuid : uuids) {
-                    System.out.println(uuid.toString());
+                    String res = U.Recouperate(uuid.toString());
+                    if (res != ""){
+                        System.out.println(res);
+                        if (Data.exists()){
+                            try {
+                                FileWriter Writer = new FileWriter(Data.getPath());
+                                Writer.write(res);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else{
+                            try {
+                                FileWriter Writer = new FileWriter(Data.getPath());
+                                Writer.append(res);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
             }
         }

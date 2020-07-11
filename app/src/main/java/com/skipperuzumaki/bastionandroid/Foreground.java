@@ -37,9 +37,9 @@ public class Foreground extends Service {
         Broadcaster = new Broadcast();
         UuidH = new UuidHelper();
         Encode = new Encoder();
-        _Trace = new Trace();
         File FileDirectory;
         FileDirectory = getFilesDir();
+        _Trace = new Trace(FileDirectory);
         try {
             Cryptography = new Crypto(FileDirectory);
         } catch (NoSuchAlgorithmException | IOException e) {
