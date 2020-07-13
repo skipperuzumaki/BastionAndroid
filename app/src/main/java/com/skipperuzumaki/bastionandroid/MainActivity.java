@@ -34,12 +34,14 @@ import javax.crypto.NoSuchPaddingException;
 public class MainActivity extends AppCompatActivity {
 
     boolean Running;
+    Sync Syncronisation;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Running = false;
+        Syncronisation = new Sync(getFilesDir());
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -84,7 +86,11 @@ public class MainActivity extends AppCompatActivity {
         final Button btn = (Button) findViewById(R.id.Sync);
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println("Testing");
+                try {
+                    Syncronisation.Start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
