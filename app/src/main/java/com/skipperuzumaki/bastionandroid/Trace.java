@@ -15,13 +15,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 
 public class Trace {
     BluetoothLeScanner mBluetoothLeScanner;
     File Data;
     UuidHelper U;
+    HashSet<String> UUIDS = new HashSet<String>();
     Trace(File Directory) {
         Data = new File(Directory.getPath() + "\\Trace.txt");
         U = new UuidHelper();
@@ -35,7 +41,16 @@ public class Trace {
             if (uuids != null) {
                 for (ParcelUuid uuid : uuids) {
                     String res = U.Recouperate(uuid.toString());
-                    if (res != ""){
+                    if (res != "" && !(UUIDS.contains(res))){
+                        UUIDS.add(res);
+                        if (UUIDS.size() > 300){
+                            UUIDS.clear();
+                        }
+                        res += ":";
+                        long timestamp = System.currentTimeMillis();
+                        timestamp /= 1000;
+                        timestamp /= 86400;
+                        res += String.valueOf(timestamp);
                         System.out.println(res);
                         if (Data.exists()){
                             try {

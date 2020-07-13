@@ -81,6 +81,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        final Button btn = (Button) findViewById(R.id.Sync);
+        btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println("Testing");
+            }
+        });
     }
     public void startService() {
         Intent serviceIntent = new Intent(this, Foreground.class);
