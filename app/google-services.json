@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "386696468310",
+    "firebase_url": "https://bastion-70daa.firebaseio.com",
+    "project_id": "bastion-70daa",
+    "storage_bucket": "bastion-70daa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386696468310:android:51c760a88ade4d84f828f7",
+        "android_client_info": {
+          "package_name": "com.skipperuzumaki.bastionandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386696468310-mrsm944p2csk893661uhfs1gnov12g1u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxsMSw8l8AAF6ZAykzO-Y_T21y2DV666g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386696468310-mrsm944p2csk893661uhfs1gnov12g1u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

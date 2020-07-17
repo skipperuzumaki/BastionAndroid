@@ -20,6 +20,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
