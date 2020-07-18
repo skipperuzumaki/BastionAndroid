@@ -27,7 +27,6 @@ import javax.crypto.spec.SecretKeySpec;
 public class Crypto {
     private SecretKey Key;
     private byte[] nonce = new byte[12];
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public
     Crypto(File Directory) throws NoSuchAlgorithmException, IOException {
         for (int i = 0; i < 12; i++){
@@ -62,7 +61,6 @@ public class Crypto {
         return cipher.doFinal(array);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     boolean Verify(byte[] message, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         SecretKey TempKey = new SecretKeySpec(key, "ChaCha20");
         Cipher cipher = null;

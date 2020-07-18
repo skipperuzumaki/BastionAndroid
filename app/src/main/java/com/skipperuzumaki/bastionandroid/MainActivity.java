@@ -1,6 +1,7 @@
 package com.skipperuzumaki.bastionandroid;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -10,6 +11,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -38,12 +40,17 @@ public class MainActivity extends AppCompatActivity {
     boolean Running;
     Sync Syncronisation;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Running = false;
-        Syncronisation = new Sync(getFilesDir());
+        try {
+            Syncronisation = new Sync(getFilesDir());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -89,9 +96,15 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    Syncronisation.Start();
+                    String temp = Syncronisation.Start();
+                    if (temp != null) {
+                        AlertNegative(temp);
+                    }
+                    else{
+                        AlertPositive();
+                    }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    AlertPositive();
                 }
             }
         });
@@ -104,6 +117,33 @@ public class MainActivity extends AppCompatActivity {
     public void stopService() {
         Intent serviceIntent = new Intent(this, Foreground.class);
         stopService(serviceIntent);
+    }
+    public void AlertPositive(){
+        AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+        dialog.setMessage("You have not come in contact with any infectious person");
+        dialog.setTitle("Result");
+        dialog.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // No Need TO do anything
+                    }
+                });
+        AlertDialog alertDialog=dialog.create();
+        alertDialog.show();
+    }
+    public void AlertNegative(String Disease){
+        Disease = "Sorry You came in Contact with a person suffering form " + Disease;
+        AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+        dialog.setMessage(Disease);
+        dialog.setTitle("Result");
+        dialog.setNegativeButton("Understood",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Todo Maybe : add information about the disease in question
+                    }
+                });
+        AlertDialog alertDialog=dialog.create();
+        alertDialog.show();
     }
 }
 

@@ -30,7 +30,6 @@ public class Foreground extends Service {
     Encoder Encode;
     Crypto Cryptography;
     Trace _Trace;
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate() {
         super.onCreate();
