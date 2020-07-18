@@ -33,7 +33,6 @@ public class Broadcast {
         databuild.setIncludeDeviceName(false);
         databuild.addServiceUuid(pUuid);
         AdvertiseData data = databuild.build();
-        System.out.println(data);
         AdvertiseCallback advertisingCallback = new AdvertiseCallback() {
             @Override
             public void onStartSuccess(AdvertiseSettings settingsInEffect) {
@@ -50,6 +49,9 @@ public class Broadcast {
     }
     void Stop() throws IOException {
         System.out.println("Stopped Broadcasting");
+        AdvertiseCallback advertisingCallback = new AdvertiseCallback() {
+        };
+        adv.stopAdvertising(advertisingCallback);
     }
     void update(String uuid) throws IOException {
         Stop();

@@ -57,7 +57,6 @@ public class Foreground extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String input = "Contact tracing Running in Background";
@@ -72,8 +71,8 @@ public class Foreground extends Service {
                 .build();
         startForeground(1, notification);
         try {
-            Broadcaster.Start(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
             _Trace.Start();
+            Broadcaster.Start(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | IOException e) {
             e.printStackTrace();
         }
