@@ -7,7 +7,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -30,12 +33,16 @@ public class Foreground extends Service {
     Encoder Encode;
     Crypto Cryptography;
     Trace _Trace;
+    HandlerThread handlerThread;
+    Boolean Run;
+
     @Override
     public void onCreate() {
         super.onCreate();
         Broadcaster = new Broadcast();
         UuidH = new UuidHelper();
         Encode = new Encoder();
+        Run = false;
         File FileDirectory;
         FileDirectory = getFilesDir();
         _Trace = new Trace(FileDirectory);
@@ -70,23 +77,48 @@ public class Foreground extends Service {
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
-        try {
-            _Trace.Start();
-            Broadcaster.Start(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | IOException e) {
-            e.printStackTrace();
-        }
+        _Trace.Start();
+        handlerThread = new HandlerThread("MyHandlerThread");
+        handlerThread.start();
+        Looper looper = handlerThread.getLooper();
+        Handler handler = new Handler(looper);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Broadcaster.Start(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
+                } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                }
+                Run = true;
+                while(Run) {
+                    System.out.println("Looping");
+                    try {
+                        Broadcaster.update(UuidH.Generate(Encode.Encode(Cryptography.Encrypt())));
+                    } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         return START_NOT_STICKY;
     }
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        Run = false;
+        handlerThread.quit();
         try {
             Broadcaster.Stop();
             _Trace.Stop();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        super.onDestroy();
     }
     @Nullable
     @Override
