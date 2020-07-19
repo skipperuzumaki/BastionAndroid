@@ -27,13 +27,17 @@ import com.google.firebase.FirebaseApp;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -108,6 +112,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        final Button Keybtn = (Button) findViewById(R.id.Key);
+        Keybtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                    AlertKey();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     public void startService() {
         Intent serviceIntent = new Intent(this, Foreground.class);
@@ -140,6 +156,34 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // Todo Maybe : add information about the disease in question
+                    }
+                });
+        AlertDialog alertDialog=dialog.create();
+        alertDialog.show();
+    }
+    public void AlertKey() throws IOException, NoSuchAlgorithmException {
+        File Data = new File(getFilesDir().getPath() + "\\Keys.txt");
+        String algorithm = "ChaCha20";
+        byte[] keyBytes;
+        if (Data.exists()){
+            keyBytes = Files.readAllBytes(Data.toPath());
+        }
+        else{
+            KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
+            SecretKey Key = keyGen.generateKey();
+            keyBytes = Key.getEncoded();
+            FileOutputStream stream = new FileOutputStream(Data.getPath());
+            stream.write(keyBytes);
+            stream.close();
+        }
+        Encoder E = new Encoder();
+        AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+        dialog.setMessage(E.Encode(keyBytes));
+        dialog.setTitle("Key");
+        dialog.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // No Need TO do anything
                     }
                 });
         AlertDialog alertDialog=dialog.create();

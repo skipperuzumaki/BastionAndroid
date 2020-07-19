@@ -90,6 +90,11 @@ public class Foreground extends Service {
                 } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                     e.printStackTrace();
                 }
+                try {
+                    Thread.sleep(300000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Run = true;
                 while(Run) {
                     System.out.println("Looping");

@@ -8,6 +8,20 @@
     tools:context=".MainActivity" >
 
     <Button
+        android:id="@+id/Key"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#6500FF"
+        android:text="Key Value"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Sync" />
+
+    <Button
         android:id="@+id/Sync"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
